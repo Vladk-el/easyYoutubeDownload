@@ -39,10 +39,12 @@
                     </div>
                 </div>
             </form>
-            {{ error }}
+
             <div class="alert alert-danger" role="alert" ng-if="error && link">
                 <strong>Oh snap!</strong> <span ng-bind="error"></<span>
             </div>
+
+            <a ng-if="protectedLink" target="_blank" ng-href="{{protectedLink}}">Download</a>
 
             <form x-ng-show="music.title">
                 <div class="form-group">

@@ -11,14 +11,22 @@
 
 		$scope.getMetaDatas = function() {
 			$scope.busy = true;
+			if($scope.link.indexOf("&list=") != -1) {
+				$scope.link = $scope.link.substring(0, $scope.link.indexOf("&list="));
+			}
 			$http.get("http://www.youtubeinmp3.com/fetch/?format=JSON&video=" + $scope.link)
 				.then(function(response) {
-					if(response.data && response.data.link) {
-						$scope.music = response.data;
-						$scope.music.length = parseInt($scope.music.length/60) + ":" + $scope.music.length%60;
-						delete $scope.error;
-					} else {
+					if(typeof response.data === 'string' || response.data instanceof String) {
+					   $scope.protectedLink = response.data.replace('<meta http-equiv="refresh" content="0; url=', '').replace('" />', '');
+					   $scope.error = "This video is protected, try the following link :";
+				   } else if(response.data && response.data.link && response.data.title) {
+ 						$scope.music = response.data;
+ 						$scope.music.length = parseInt($scope.music.length/60) + ":" + $scope.music.length%60;
+ 						delete $scope.error;
+ 						delete $scope.protectedLink;
+ 					} else {
 						$scope.error = "Does not look to be a valid youtube single video url ...";
+ 						delete $scope.protectedLink;
 					}
 					$scope.busy = false;
 				})
@@ -34,6 +42,7 @@
 			delete $scope.link;
 			delete $scope.music;
 			delete $scope.error;
+			delete $scope.protectedLink;
 		};
 	});
 
