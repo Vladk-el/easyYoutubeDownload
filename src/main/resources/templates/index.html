@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr-FR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>EasyYoutubeDownloader</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon"/>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+          crossorigin="anonymous"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.7/angular.min.js"></script>
+
+    <link rel="stylesheet" th:href="@{/css/main.css}"
+          href="../../css/main.css"/>
+    <script type="text/javascript" th:src="@{/js/app.js}" src="../../js/app.js"></script>
+
+</head>
+
+<body ng-app="ngApp">
+
+<div ng-controller="MainController">
+
+    <div class="container-fluid">
+
+        <div class="jumbotron">
+            <h1>Easy youtube download</h1>
+        </div>
+
+        <form>
+            <div class="form-group">
+                <label for="link-input" class="col-2 col-form-label">Link</label>
+                <div class="col-12">
+                    <input class="form-control" style="width:85%; display:inline-block;"
+                           ng-model="link" type="text" id="link-input"/>
+                    <button type="submit" class="btn btn-primary" ng-click="getMetaDatas()"
+                            ng-disabled="busy || !link">
+                        {{ busy ? 'Searching' : 'Search' }}
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="alert alert-danger" role="alert" ng-if="error &amp;&amp; link">
+            <strong>Oh snap!</strong> <span ng-bind="error"></span>
+        </div>
+
+        <a ng-if="protectedLink" target="_blank" ng-href="{{protectedLink}}">Download</a>
+
+        <form x-ng-show="music.title">
+            <div class="form-group">
+                <label for="music-title-input" class="col-2 col-form-label">Title</label>
+                <div class="col-8">
+                    <label class="form-control" ng-bind="music.title" type="text"
+                           id="music-title-input"></label>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="music-length-input" class="col-2 col-form-label">Length</label>
+                <div class="col-12">
+                    <label class="form-control" style="width:10%; display:inline-block;"
+                           ng-bind="music.length" type="text" id="music-length-input"></label>
+                    <button class="btn btn-warning" style="float: right; margin-right: 10px;"
+                            ng-click="reset()" ng-disabled="busy || !link">
+                        Cancel
+                    </button>
+                    <a class="btn btn-primary" style="float: right; margin-right: 10px;"
+                       role="button" ng-disabled="busy || !link || !music.link"
+                       download="{{ music.title }}"
+                       ng-href="{{ music.link }}">
+                        Donwload
+                    </a>
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>
+<!-- thanks to http://www.mkyong.com/spring-boot/spring-boot-hello-world-example-thymeleaf/ -->
+<!--and https://www.mkyong.com/java/how-to-execute-shell-command-from-java/ -->
