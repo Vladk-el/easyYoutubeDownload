@@ -6,44 +6,67 @@
 	.controller('MainController', function ($scope, $http, $log) {
         $log.debug("Enter MainController");
 
-        $scope.busy = false;
-		$scope.link = "";
+    var init = function() {
+      $scope.now = new Date();
+      $scope.busy = false;
+      $scope.link = "";
+      $scope.location = {
+        download: true,
+        history: false
+      };
+      $scope.getHistory();
+    };
 
-		$scope.getMetaDatas = function() {
+		$scope.toggle = function(loc) {
+		  Object.keys($scope.location).forEach(function(key) {
+		    $scope.location[key] = key === loc ? true : false;
+		  });
+		};
+
+		$scope.downloadOnServer = function() {
 			$scope.busy = true;
+			delete $scope.download;
 			if($scope.link.indexOf("&list=") != -1) {
 				$scope.link = $scope.link.substring(0, $scope.link.indexOf("&list="));
 			}
-			$http.get("http://www.youtubeinmp3.com/fetch/?format=JSON&video=" + $scope.link)
+			$http.post("/downloadOnServer", {url: $scope.link})
 				.then(function(response) {
-					if(typeof response.data === 'string' || response.data instanceof String) {
-					   $scope.protectedLink = response.data.replace('<meta http-equiv="refresh" content="0; url=', '').replace('" />', '');
-					   $scope.error = "This video is protected, try the following link :";
-				   } else if(response.data && response.data.link && response.data.title) {
- 						$scope.music = response.data;
- 						$scope.music.length = parseInt($scope.music.length/60) + ":" + $scope.music.length%60;
- 						delete $scope.error;
- 						delete $scope.protectedLink;
- 					} else {
-						$scope.error = "Does not look to be a valid youtube single video url ...";
- 						delete $scope.protectedLink;
-					}
+					$log.debug("response : ", response);
 					$scope.busy = false;
+					if(response.data.name) {
+					  $scope.download = response.data.name;
+            $scope.getHistory();
+					} else {
+            $scope.error = "An error has come, please contact your administrator.";
+					}
 				})
 				.catch(function(reason) {
 					$log.error("failed !", reason)
-					$scope.error = "Does not look to be a valid youtube single video url ...";
+					$scope.error = reason.error;
 					$scope.busy = false;
 				});
+		};
+
+		$scope.getHistory = function() {
+      $http.get("/list")
+        .then(function(response) {
+          $log.debug(response.data);
+          $scope.history = response.data;
+        })
+        .catch(function(reason){
+          $log.error("Error during retrieving history", reason);
+        });
 		};
 
 		$scope.reset = function() {
 			$scope.busy = false;
 			delete $scope.link;
-			delete $scope.music;
 			delete $scope.error;
-			delete $scope.protectedLink;
+			delete $scope.download;
 		};
+
+		init();
+
 	});
 
 })(window.angular);

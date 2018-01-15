@@ -2,13 +2,18 @@ package com.vladkel.easy.youtube.download.service;
 
 import com.vladkel.easy.youtube.download.model.Dl;
 import com.vladkel.easy.youtube.download.model.Dlr;
+import com.vladkel.easy.youtube.download.model.Hr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -21,12 +26,16 @@ import java.util.stream.Collectors;
 @Service
 public class DownloadService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DownloadService.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(DownloadService.class);
+
+  private final static String DESTINATION = "[ffmpeg] Destination: ";
+  private final static String DOWNLOAD_DONE = "[download] 100%";
+  private final static String ALREADY_DOWNLOADED = "has already been downloaded";
 
   @Value("${download.base.path}")
   private String DOWNLOAD_BASE_PATH;
 
-  public Dlr download(Dl dl) {
+  public Dlr downloadOnServer(Dl dl) {
     LOGGER.info("try do download : {}", dl.getUrl());
     return feedback(parse(dl));
   }
@@ -35,7 +44,9 @@ public class DownloadService {
     return new StringBuilder("youtube-dl")
         .append(" --no-playlist")
         .append(" --restrict-filenames")
-        .append(" --audio-quality 0")
+        .append(" --no-mtime")
+        .append(" --extract-audio")
+        .append(" --audio-format mp3")
         .append(" -o " + DOWNLOAD_BASE_PATH + "/%(title)s.%(ext)s ")
         .append(dl.getUrl())
         .toString();
@@ -43,7 +54,7 @@ public class DownloadService {
 
   private Dlr feedback(String cmd) {
 
-    LOGGER.info("cmd : {}", cmd);
+    LOGGER.info("cmd -> {}", cmd);
 
     StringBuffer output = new StringBuffer();
 
@@ -69,14 +80,39 @@ public class DownloadService {
   }
 
   private Dlr getDlr(String content) {
+    // Status TODO
     Dlr.Status status =
-        content.contains("[download] 100%") && !content.contains("has already been downloaded") ?
+        content.contains(DOWNLOAD_DONE) && !content.contains(ALREADY_DOWNLOADED) ?
             Dlr.Status.OK :
             Dlr.Status.NOK;
+
+    // Path
+    String name = null;
     List<String> paths = Pattern.compile("\\n").splitAsStream(content)
-        .filter(s -> s.contains("[download] Destination:")).collect(
+        .filter(s -> s.contains(DESTINATION)).collect(
             Collectors.toList());
-    return new Dlr(status, content, DOWNLOAD_BASE_PATH + (paths.size() > 0 ? paths.get(0) : ""));
+    if (paths.size() > 0) {
+      String path = DOWNLOAD_BASE_PATH + paths.get(0).substring(paths.get(0).indexOf(DESTINATION));
+      name = path.substring(path.lastIndexOf("/") + 1);
+    }
+
+    // Error TODO
+    String error = null;
+
+    return new Dlr(status, content, name, error);
+  }
+
+  public File download(String name) {
+    String path = DOWNLOAD_BASE_PATH + "/" + name;
+    LOGGER.debug("looking for file {}", path);
+    return new File(path);
+  }
+
+  public List<Hr> list() throws IOException {
+    List<Hr> files = Files.list(Paths.get(DOWNLOAD_BASE_PATH)).filter(Files::isRegularFile)
+        .map(p -> new Hr(new File(p.toUri())))
+        .collect(Collectors.toList());
+    return files;
   }
 
 }

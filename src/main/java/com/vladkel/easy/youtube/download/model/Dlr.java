@@ -1,7 +1,5 @@
 package com.vladkel.easy.youtube.download.model;
 
-import org.springframework.beans.factory.annotation.Value;
-
 /**
  * © Vladk-el 2017. All rights reserved.
  * <p>
@@ -13,15 +11,14 @@ public class Dlr {
 
   private Status status;
   private String content;
-  private @Value("${download.base.path}") String path;
-  public enum Status {
-    OK, NOK
-  }
+  private String name;
+  private String error;
 
-  public Dlr(Status status, String content, String path) {
+  public Dlr(Status status, String content, String name, String error) {
     this.status = status;
     this.content = content;
-    this.path = path;
+    this.name = name;
+    this.error = error;
   }
 
   public Status getStatus() {
@@ -40,11 +37,23 @@ public class Dlr {
     this.content = content;
   }
 
-  public String getPath() {
-    return path;
+  public String getName() {
+    return name;
   }
 
-  public void setPath(String path) {
-    this.path = path;
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getError() {
+    return error;
+  }
+
+  public void setError(String error) {
+    this.error = error;
+  }
+
+  public enum Status {
+    OK, NOK
   }
 }

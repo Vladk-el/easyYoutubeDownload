@@ -11,9 +11,9 @@
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+          integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
           crossorigin="anonymous"/>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
             integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
@@ -24,69 +24,104 @@
           href="../../css/main.css"/>
     <script type="text/javascript" th:src="@{/js/app.js}" src="../../js/app.js"></script>
 
+    <script src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
+
 </head>
 
 <body ng-app="ngApp">
 
 <div ng-controller="MainController">
 
-    <div class="container-fluid">
-
-        <div class="jumbotron">
-            <h1>Easy youtube download</h1>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand active" href="#">Easy youtube download</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarText" aria-controls="navbarText" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item" ng-class="{active: location.download}">
+                    <a class="nav-link" ng-click="toggle('download')">Download <span
+                            class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item" ng-class="{active: location.history}">
+                    <a class="nav-link" ng-click="toggle('history')">History <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
         </div>
+    </nav>
+    <br/>
+    <br/>
 
+    <div class="container-fluid" ng-show="location.download">
         <form>
             <div class="form-group">
-                <label for="link-input" class="col-2 col-form-label">Link</label>
+                <label for="link-input" class="col-2 col-form-label" title="{{link}}">Link</label>
                 <div class="col-12">
-                    <input class="form-control" style="width:85%; display:inline-block;"
+                    <input class="form-control" style="width:80%; display:inline-block;"
                            ng-model="link" type="text" id="link-input"/>
-                    <button type="submit" class="btn btn-primary" ng-click="getMetaDatas()"
-                            ng-disabled="busy || !link">
-                        {{ busy ? 'Searching' : 'Search' }}
+                    <button type="submit" style="width:19%" class="btn btn-primary"
+                            ng-click="downloadOnServer()"
+                            ng-if="!busy"
+                            ng-disabled="!link || !link.startsWith('https://www.youtube.com/watch?v=')">
+                        Search
+                    </button>
+                    <button type="submit" style="width:19%" class="btn btn-primary"
+                            ng-click="downloadOnServer()"
+                            ng-if="busy" ng-disabled="true">
+                        <i class="fas fa-spinner fa-spin"></i> Processing ...
                     </button>
                 </div>
             </div>
         </form>
 
         <div class="alert alert-danger" role="alert" ng-if="error &amp;&amp; link">
+            <br/>
             <strong>Oh snap!</strong> <span ng-bind="error"></span>
         </div>
 
-        <a ng-if="protectedLink" target="_blank" ng-href="{{protectedLink}}">Download</a>
-
-        <form x-ng-show="music.title">
-            <div class="form-group">
-                <label for="music-title-input" class="col-2 col-form-label">Title</label>
-                <div class="col-8">
-                    <label class="form-control" ng-bind="music.title" type="text"
-                           id="music-title-input"></label>
-
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="music-length-input" class="col-2 col-form-label">Length</label>
-                <div class="col-12">
-                    <label class="form-control" style="width:10%; display:inline-block;"
-                           ng-bind="music.length" type="text" id="music-length-input"></label>
-                    <button class="btn btn-warning" style="float: right; margin-right: 10px;"
-                            ng-click="reset()" ng-disabled="busy || !link">
-                        Cancel
-                    </button>
-                    <a class="btn btn-primary" style="float: right; margin-right: 10px;"
-                       role="button" ng-disabled="busy || !link || !music.link"
-                       download="{{ music.title }}"
-                       ng-href="{{ music.link }}">
-                        Donwload
-                    </a>
-                </div>
-            </div>
-        </form>
-
-
+        <div class="text-center" ng-if="download">
+            <br/>
+            <a target="_blank" ng-href="/download/{{download}}" title="{{download}}"><i
+                    class="fas fa-download"></i> Download {{download}}</a>
+        </div>
     </div>
 
+    <div class="container-fluid" ng-if="location.history">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Date</th>
+                <th scope="col">Size</th>
+                <th scope="col">Download</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="h in history | orderBy: '-date'">
+                <td ng-bind="h.name"></td>
+                <td ng-bind="h.date | date:'yyyy-MM-dd HH:mm:ss'"></td>
+                <td ng-bind="h.length / (1024*1024) | number : 2"></td>
+                <td class="text-center">
+                    <a target="_blank" ng-href="/download/{{h.name}}" title="/download/{{h.name}}">
+                        <i class="fas fa-download"></i></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container-fluid">
+
+        <br/>
+        <br/>
+        <br/>
+
+        <div class="well well-sm no-border footer text-center font-weight-bold">
+            <p>&copy; Vladk-el {{ now | date:'yyyy' }}</p>
+        </div>
+
+    </div>
 
 </div>
 
