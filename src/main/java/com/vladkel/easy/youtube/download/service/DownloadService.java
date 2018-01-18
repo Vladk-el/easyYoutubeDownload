@@ -2,7 +2,6 @@ package com.vladkel.easy.youtube.download.service;
 
 import com.vladkel.easy.youtube.download.model.Dl;
 import com.vladkel.easy.youtube.download.model.Dlr;
-import com.vladkel.easy.youtube.download.model.Hr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,14 +10,16 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
+ * Download service.
+ * Allow to download a video from Youtube & store it on the server.
+ * <p>
  * © Vladk-el 2017. All rights reserved.
  *
  * @author elaversin
@@ -30,59 +31,76 @@ public class DownloadService {
 
   private final static String DESTINATION = "[ffmpeg] Destination: ";
   private final static String DOWNLOAD_DONE = "[download] 100%";
-  private final static String ALREADY_DOWNLOADED = "has already been downloaded";
+  private final static String LINE_SEPARATOR = System.getProperty("line.separator");
+  private final static String PREMATURE_ENDS = "Downloading video info webpage" + LINE_SEPARATOR;
 
   @Value("${download.base.path}")
   private String DOWNLOAD_BASE_PATH;
 
   public Dlr downloadOnServer(Dl dl) {
-    LOGGER.info("try do download : {}", dl.getUrl());
-    return feedback(parse(dl));
+    LOGGER.info("trying do download : {} ...", dl.getUrl());
+    return process(getCmd(dl));
   }
 
-  private String parse(Dl dl) {
+  private String getCmd(Dl dl) {
     return new StringBuilder("youtube-dl")
         .append(" --no-playlist")
         .append(" --restrict-filenames")
         .append(" --no-mtime")
         .append(" --extract-audio")
-        .append(" --audio-format mp3")
-        .append(" -o " + DOWNLOAD_BASE_PATH + "/%(title)s.%(ext)s ")
+        .append(" --audio-format mp3").append(" -o ").append(DOWNLOAD_BASE_PATH)
+        .append("/%(title)s.%(ext)s ")
         .append(dl.getUrl())
         .toString();
   }
 
-  private Dlr feedback(String cmd) {
+  private Dlr process(String cmd) {
 
     LOGGER.info("cmd -> {}", cmd);
 
-    StringBuffer output = new StringBuffer();
-
     Process p;
+    String result = null;
+    String error = null;
     try {
       p = Runtime.getRuntime().exec(cmd);
       p.waitFor();
 
-      BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+      result = read(p.getInputStream());
 
-      String line = "";
-      while ((line = reader.readLine()) != null) {
-        output.append(line + "\n");
+      if (result.endsWith(PREMATURE_ENDS)) {
+        result = read(p.getErrorStream());
+        throw new Exception(result);
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      error = e.getMessage();
+      LOGGER.error("Error during youtube-dl execution : " + error, e);
     }
 
-    LOGGER.info("feedback : {}" + output.toString());
+    LOGGER.info("process : {}", result);
 
-    return getDlr(output.toString());
+    return getDlr(result, error);
   }
 
-  private Dlr getDlr(String content) {
-    // Status TODO
+  private String read(InputStream stream) throws IOException {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+    StringBuilder output = new StringBuilder();
+    String line = "";
+    while ((line = reader.readLine()) != null) {
+      output.append(line).append(LINE_SEPARATOR);
+    }
+    return output.toString();
+  }
+
+  private Dlr getDlr(String content, String error) {
+
+    if (error != null) {
+      return new Dlr(Dlr.Status.NOK, null, null, error);
+    }
+
+    // Status
     Dlr.Status status =
-        content.contains(DOWNLOAD_DONE) && !content.contains(ALREADY_DOWNLOADED) ?
+        content.contains(DOWNLOAD_DONE) ?
             Dlr.Status.OK :
             Dlr.Status.NOK;
 
@@ -96,23 +114,13 @@ public class DownloadService {
       name = path.substring(path.lastIndexOf("/") + 1);
     }
 
-    // Error TODO
-    String error = null;
-
     return new Dlr(status, content, name, error);
   }
 
   public File download(String name) {
     String path = DOWNLOAD_BASE_PATH + "/" + name;
-    LOGGER.debug("looking for file {}", path);
+    LOGGER.info("looking for file {}", path);
     return new File(path);
-  }
-
-  public List<Hr> list() throws IOException {
-    List<Hr> files = Files.list(Paths.get(DOWNLOAD_BASE_PATH)).filter(Files::isRegularFile)
-        .map(p -> new Hr(new File(p.toUri())))
-        .collect(Collectors.toList());
-    return files;
   }
 
 }

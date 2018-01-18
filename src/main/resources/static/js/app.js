@@ -25,6 +25,7 @@
 
 		$scope.downloadOnServer = function() {
 			$scope.busy = true;
+			delete $scope.error;
 			delete $scope.download;
 			if($scope.link.indexOf("&list=") != -1) {
 				$scope.link = $scope.link.substring(0, $scope.link.indexOf("&list="));
@@ -37,7 +38,8 @@
 					  $scope.download = response.data.name;
             $scope.getHistory();
 					} else {
-            $scope.error = "An error has come, please contact your administrator.";
+            $scope.error = "An error occurred, please contact your administrator : "
+             + response.data.error;
 					}
 				})
 				.catch(function(reason) {
@@ -48,7 +50,7 @@
 		};
 
 		$scope.getHistory = function() {
-      $http.get("/list")
+      $http.get("/history")
         .then(function(response) {
           $log.debug(response.data);
           $scope.history = response.data;

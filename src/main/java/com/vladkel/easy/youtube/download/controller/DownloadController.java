@@ -4,6 +4,7 @@ import com.vladkel.easy.youtube.download.model.Dl;
 import com.vladkel.easy.youtube.download.model.Dlr;
 import com.vladkel.easy.youtube.download.model.Hr;
 import com.vladkel.easy.youtube.download.service.DownloadService;
+import com.vladkel.easy.youtube.download.service.HistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,10 @@ public class DownloadController {
   private final static Logger LOGGER = LoggerFactory.getLogger(DownloadController.class);
 
   @Autowired
-  private DownloadService service;
+  private DownloadService downloadService;
+
+  @Autowired
+  private HistoryService historyService;
 
   /**
    * Index mapping.
@@ -59,7 +63,7 @@ public class DownloadController {
    */
   @PostMapping("/downloadOnServer")
   public @ResponseBody Dlr downloadOnServer(@RequestBody Dl dl) {
-    return service.downloadOnServer(dl);
+    return downloadService.downloadOnServer(dl);
   }
 
   /**
@@ -75,7 +79,7 @@ public class DownloadController {
 
     LOGGER.info("Download request for {}", fileName);
 
-    File file = service.download(fileName);
+    File file = downloadService.download(fileName);
     Path path = Paths.get(file.getAbsolutePath());
     ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
@@ -91,13 +95,13 @@ public class DownloadController {
   }
 
   /**
-   * List HTTP endpoint.
+   * History HTTP endpoint.
    *
    * @return a list of all previous download.
    * @throws IOException if a problem come during list process.
    */
-  @GetMapping("/list")
-  public @ResponseBody List<Hr> list() throws IOException {
-    return service.list();
+  @GetMapping("/history")
+  public @ResponseBody List<Hr> getHistory() throws IOException {
+    return historyService.getHistory();
   }
 }
