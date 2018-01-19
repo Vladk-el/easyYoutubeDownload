@@ -18,19 +18,21 @@ $ mvn clean install
 If you want to use the default locations :
 ```
 $ sudo mkdir /var/easy-youtube-download && sudo chown $USER. /var/easy-youtube-download
+$ mkdir /var/easy-youtube-download/music && mkdir /var/easy-youtube-download/h2
 $ sudo mkdir /var/log/easy-youtube-download && sudo chown $USER. /var/log/easy-youtube-download
 ```
 
 ## Options
 - Server port (default 8082) : --server.port={your_wanted_port}
-- Download path (default : --download.base.path={your_wanted_download_path}
-- Logs (default /var/log/easy-youtube-download) : --logging.path={your_wanted_logging_path}
+- Download path (default /var/easy-youtube-download/music)--download.base.path={your_wanted_download_path}
+- Logs path (default /var/log/easy-youtube-download) : --logging.path={your_wanted_logging_path}
+- H2 path (default /var/easy-youtube-download/h2) : --h2.path={your_wanted_h2_path}
+- H2 console (default true) : --spring.h2.console.enabled={true/false}
+- H2 username (default sa) : --spring.datasource.username={your_wanted_h2_username}
+- H2 password (empty by default) : --spring.datasource.password={your_wanted_h2_password}
 
 ## Launch
 ```
-$ java -jar target/easy-youtube-download-exec.jar --server.port={your_wanted_port} --download.base.path={your_wanted_path} &
+$ java -jar target/easy-youtube-download-exec.jar [--option=value...] &
 ```
-
-## Test
-curl -H "Content-Type: application/json" -X POST -d '{"url":"https://www.youtube.com/watch?v=gWapX12pHPQ"}' http://localhost:8080/download
 

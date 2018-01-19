@@ -6,8 +6,8 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" th:href="@{/img/favicon.ico}" href="../../img/favicon.ico" type="image/x-icon"/>
+    <link rel="icon" th:href="@{/img/favicon.ico}" href="../../img/favicon.ico" type="image/x-icon"/>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
@@ -33,7 +33,7 @@
 <div ng-controller="MainController">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand active" href="#">Easy youtube download</a>
+        <a class="navbar-brand active" href="#" ng-click="toggle('download')">Easy youtube download</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse"
                 data-target="#navbarText" aria-controls="navbarText" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -83,8 +83,8 @@
 
         <div class="text-center" ng-if="download">
             <br/>
-            <a target="_blank" ng-href="/download/{{download}}" title="{{download}}"><i
-                    class="fas fa-download"></i> Download {{download}}</a>
+            <a target="_blank" ng-href="/download/{{download.id}}" title="{{download.name}}"><i
+                    class="fas fa-download"></i> Download {{download.name}}</a>
         </div>
     </div>
 
@@ -102,9 +102,9 @@
             <tr ng-repeat="h in history | orderBy: '-date'">
                 <td ng-bind="h.name"></td>
                 <td ng-bind="h.date | date:'yyyy-MM-dd HH:mm:ss'"></td>
-                <td ng-bind="h.length / (1024*1024) | number : 2"></td>
+                <td>{{ h.length / (1024*1024) | number : 2 }} Mo</td>
                 <td class="text-center">
-                    <a target="_blank" ng-href="/download/{{h.name}}" title="/download/{{h.name}}">
+                    <a target="_blank" ng-href="/download/{{h.id}}" title="{{h.name}}">
                         <i class="fas fa-download"></i></a></td>
             </tr>
             </tbody>

@@ -1,9 +1,9 @@
 package com.vladkel.easy.youtube.download.model;
 
 /**
- * © Vladk-el 2017. All rights reserved.
- * <p>
  * Bean of a youtude-dl request.
+ * <p>
+ * © Vladk-el 2017. All rights reserved.
  *
  * @author elaversin
  */

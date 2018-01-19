@@ -34,8 +34,11 @@
 				.then(function(response) {
 					$log.debug("response : ", response);
 					$scope.busy = false;
-					if(response.data.name) {
-					  $scope.download = response.data.name;
+					if(response.data.id) {
+					  $scope.download = {
+					    id: response.data.id,
+					    name: response.data.name
+					  };
             $scope.getHistory();
 					} else {
             $scope.error = "An error occurred, please contact your administrator : "

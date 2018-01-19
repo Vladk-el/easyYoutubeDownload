@@ -2,7 +2,7 @@ package com.vladkel.easy.youtube.download.controller;
 
 import com.vladkel.easy.youtube.download.model.Dl;
 import com.vladkel.easy.youtube.download.model.Dlr;
-import com.vladkel.easy.youtube.download.model.Hr;
+import com.vladkel.easy.youtube.download.model.Hm;
 import com.vladkel.easy.youtube.download.service.DownloadService;
 import com.vladkel.easy.youtube.download.service.HistoryService;
 import org.slf4j.Logger;
@@ -70,22 +70,22 @@ public class DownloadController {
    * Donwload HTTP endpoint.
    * Allow to retrieve a music by given name.
    *
-   * @param fileName the name of wanted file.
+   * @param id the identifier of wanted file.
    * @return a {@link Dlr} response object.
    */
-  @GetMapping("/download/{fileName:.+}")
-  public ResponseEntity<Resource> download(@PathVariable(value = "fileName") String fileName)
+  @GetMapping("/download/{id}")
+  public ResponseEntity<Resource> download(@PathVariable(value = "id") Long id)
       throws IOException {
 
-    LOGGER.info("Download request for {}", fileName);
+    LOGGER.info("Download request for {} intercepted.", id);
 
-    File file = downloadService.download(fileName);
+    File file = downloadService.download(id);
     Path path = Paths.get(file.getAbsolutePath());
     ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
     HttpHeaders headers = new HttpHeaders();
-    headers.set("content-disposition", "inline; finename=\"" + file.getName() + "\"");
-    headers.set("content-length", String.valueOf(file.length()));
+    headers.set("Content-Disposition", "attachment; filename=\"" + path.getFileName().toString() + "\"");
+    headers.set("Content-Length", String.valueOf(file.length()));
 
     return ResponseEntity.ok()
         .headers(headers)
@@ -101,7 +101,7 @@ public class DownloadController {
    * @throws IOException if a problem come during list process.
    */
   @GetMapping("/history")
-  public @ResponseBody List<Hr> getHistory() throws IOException {
+  public @ResponseBody List<Hm> getHistory() throws IOException {
     return historyService.getHistory();
   }
 }

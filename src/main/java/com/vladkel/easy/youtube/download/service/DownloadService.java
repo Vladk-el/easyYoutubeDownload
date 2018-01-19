@@ -2,8 +2,11 @@ package com.vladkel.easy.youtube.download.service;
 
 import com.vladkel.easy.youtube.download.model.Dl;
 import com.vladkel.easy.youtube.download.model.Dlr;
+import com.vladkel.easy.youtube.download.model.Hm;
+import com.vladkel.easy.youtube.download.persistence.HmRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,24 +41,17 @@ public class DownloadService {
   @Value("${download.base.path}")
   private String DOWNLOAD_BASE_PATH;
 
+  @Autowired
+  private HmRepository repository;
+
   public Dlr downloadOnServer(Dl dl) {
     LOGGER.info("trying do download : {} ...", dl.getUrl());
-    return process(getCmd(dl));
+    return process(dl);
   }
 
-  private String getCmd(Dl dl) {
-    return new StringBuilder("youtube-dl")
-        .append(" --no-playlist")
-        .append(" --restrict-filenames")
-        .append(" --no-mtime")
-        .append(" --extract-audio")
-        .append(" --audio-format mp3").append(" -o ").append(DOWNLOAD_BASE_PATH)
-        .append("/%(title)s.%(ext)s ")
-        .append(dl.getUrl())
-        .toString();
-  }
-
-  private Dlr process(String cmd) {
+  private Dlr process(Dl dl) {
+    Date start = new Date();
+    String cmd = getCmd(dl);
 
     LOGGER.info("cmd -> {}", cmd);
 
@@ -77,9 +74,19 @@ public class DownloadService {
       LOGGER.error("Error during youtube-dl execution : " + error, e);
     }
 
-    LOGGER.info("process : {}", result);
+    return saveHm(dl, getDlr(result, error), start);
+  }
 
-    return getDlr(result, error);
+  private String getCmd(Dl dl) {
+    return new StringBuilder("youtube-dl")
+        .append(" --no-playlist")
+        .append(" --restrict-filenames")
+        .append(" --no-mtime")
+        .append(" --extract-audio")
+        .append(" --audio-format mp3").append(" -o ").append(DOWNLOAD_BASE_PATH)
+        .append("/%(title)s.%(ext)s ")
+        .append(dl.getUrl())
+        .toString();
   }
 
   private String read(InputStream stream) throws IOException {
@@ -117,9 +124,27 @@ public class DownloadService {
     return new Dlr(status, content, name, error);
   }
 
-  public File download(String name) {
-    String path = DOWNLOAD_BASE_PATH + "/" + name;
-    LOGGER.info("looking for file {}", path);
+  private Dlr saveHm(Dl dl, Dlr dlr, Date start) {
+    if (dlr.getStatus().equals(Dlr.Status.OK)) {
+      repository.save(
+          new Hm(
+              dl,
+              dlr,
+              new File(DOWNLOAD_BASE_PATH + "/" + dlr.getName())
+          )
+      );
+      dlr.setId(repository.findByCleanName(dlr.getName()).getId());
+      LOGGER
+          .info("Took {} seconds to download {}", (new Date().getTime() - start.getTime()) / 1000,
+              dlr.getName());
+    }
+    return dlr;
+  }
+
+  public File download(Long id) {
+    Hm hm = repository.findById(id);
+    String path = DOWNLOAD_BASE_PATH + "/" + hm.getCleanName();
+    LOGGER.info("Found file {} for index {}.", path, id);
     return new File(path);
   }
 

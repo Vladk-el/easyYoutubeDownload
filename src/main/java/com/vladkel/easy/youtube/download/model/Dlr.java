@@ -1,14 +1,15 @@
 package com.vladkel.easy.youtube.download.model;
 
 /**
- * © Vladk-el 2017. All rights reserved.
- * <p>
  * Bean of a youtude-dl response.
+ * <p>
+ * © Vladk-el 2017. All rights reserved.
  *
  * @author elaversin
  */
 public class Dlr {
 
+  private Long id;
   private Status status;
   private String content;
   private String name;
@@ -19,6 +20,14 @@ public class Dlr {
     this.content = content;
     this.name = name;
     this.error = error;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public Status getStatus() {
