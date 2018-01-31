@@ -3,9 +3,9 @@ package com.vladkel.easy.youtube.download.model;
 /**
  * Bean of a youtude-dl request.
  * <p>
- * © Vladk-el 2017. All rights reserved.
+ * © Vladk-el 2018. All rights reserved.
  *
- * @author elaversin
+ * @author Eliott Laversin
  */
 public class Dl {
 

@@ -14,9 +14,9 @@ import java.util.List;
  * History service.
  * Allow to manage passed downloads.
  * <p>
- * © Vladk-el 2017. All rights reserved.
+ * © Vladk-el 2018. All rights reserved.
  *
- * @author elaversin
+ * @author Eliott Laversin
  */
 @Service
 public class HistoryService {

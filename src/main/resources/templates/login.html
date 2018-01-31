@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring Security Example </title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!-- Security check -->
+    <meta th:if="!${@environment.getProperty('security.enabled')} or ${#httpServletRequest.remoteUser}"
+          http-equiv="refresh" content="0; URL=/"/>
+
+    <link rel="shortcut icon" th:href="@{/img/favicon.ico}" href="../../img/favicon.ico"
+          type="image/x-icon"/>
+    <link rel="icon" th:href="@{/img/favicon.ico}" href="../../img/favicon.ico"
+          type="image/x-icon"/>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div th:if="${param.error}" class="alert alert-danger text-center" role="alert">
+    Invalid username and password.
+</div>
+<div th:if="${param.logout}" class="alert alert-info text-center" role="alert">
+    You have been logged out.
+</div>
+
+<div class="container">
+
+    <form class="form-signin" th:action="@{/login}" method="post"
+          style="width: 50%; margin: 10% auto auto auto;">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="inputUser" class="sr-only">User name</label>
+        <input type="text" id="inputUser" name="username" class="form-control" placeholder="User"/>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" name="password" class="form-control"
+               placeholder="Password"/>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+</div>
+
+</body>
+</html>

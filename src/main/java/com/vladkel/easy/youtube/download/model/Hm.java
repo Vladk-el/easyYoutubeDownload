@@ -9,9 +9,9 @@ import java.util.Date;
 /**
  * Bean of stored history entry.
  * <p>
- * © Vladk-el 2017. All rights reserved.
+ * © Vladk-el 2018. All rights reserved.
  *
- * @author elaversin
+ * @author Eliott Laversin
  */
 @Entity
 public class Hm {

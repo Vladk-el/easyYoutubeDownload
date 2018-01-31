@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * HM repository. Allow to interact with db.
  * <p>
- * © Vladk-el 2017. All rights reserved.
+ * © Vladk-el 2018. All rights reserved.
  *
- * @author elaversin
+ * @author Eliott Laversin
  */
 public interface HmRepository extends CrudRepository<Hm, Long> {
 

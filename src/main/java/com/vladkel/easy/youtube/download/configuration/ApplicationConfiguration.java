@@ -3,9 +3,9 @@ package com.vladkel.easy.youtube.download.configuration;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * © Vladk-el 2017. All rights reserved.
+ * © Vladk-el 2018. All rights reserved.
  *
- * @author elaversin
+ * @author Eliott Laversin
  */
 @Configuration
 public class ApplicationConfiguration {

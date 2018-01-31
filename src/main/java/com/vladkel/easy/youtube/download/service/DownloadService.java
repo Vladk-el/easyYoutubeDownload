@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
  * Download service.
  * Allow to download a video from Youtube & store it on the server.
  * <p>
- * © Vladk-el 2017. All rights reserved.
+ * © Vladk-el 2018. All rights reserved.
  *
- * @author elaversin
+ * @author Eliott Laversin
  */
 @Service
 public class DownloadService {

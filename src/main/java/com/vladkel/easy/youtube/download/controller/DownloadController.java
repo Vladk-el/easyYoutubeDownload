@@ -29,9 +29,9 @@ import java.nio.file.Paths;
 import java.util.List;
 
 /**
- * © Vladk-el 2017. All rights reserved.
+ * © Vladk-el 2018. All rights reserved.
  *
- * @author elaversin
+ * @author Eliott Laversin
  */
 @Controller
 public class DownloadController {
@@ -52,6 +52,16 @@ public class DownloadController {
   @RequestMapping("/")
   public String index() {
     return "index";
+  }
+
+  /**
+   * Login mapping.
+   *
+   * @return the login.html template.
+   */
+  @RequestMapping("/login")
+  public String login() {
+    return "login";
   }
 
   /**
@@ -77,7 +87,7 @@ public class DownloadController {
   public ResponseEntity<Resource> download(@PathVariable(value = "id") Long id)
       throws IOException {
 
-    LOGGER.info("Download request for {} intercepted.", id);
+    LOGGER.info("Download request for id {} intercepted.", id);
 
     File file = downloadService.download(id);
     Path path = Paths.get(file.getAbsolutePath());

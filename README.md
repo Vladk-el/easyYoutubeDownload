@@ -23,13 +23,26 @@ $ sudo mkdir /var/log/easy-youtube-download && sudo chown $USER. /var/log/easy-y
 ```
 
 ## Options
-- Server port (default 8082) : --server.port={your_wanted_port}
-- Download path (default /var/easy-youtube-download/music)--download.base.path={your_wanted_download_path}
-- Logs path (default /var/log/easy-youtube-download) : --logging.path={your_wanted_logging_path}
-- H2 path (default /var/easy-youtube-download/h2) : --h2.path={your_wanted_h2_path}
-- H2 console (default true) : --spring.h2.console.enabled={true/false}
-- H2 username (default sa) : --spring.datasource.username={your_wanted_h2_username}
-- H2 password (empty by default) : --spring.datasource.password={your_wanted_h2_password}
+All options are editable in the application.properties file.
+You can also set them directly from the command line when you start the application :
+
+- Server port (default 8082) : ```--server.port={your_wanted_port}```
+
+- Download path (default /var/easy-youtube-download/music) : ```--download.base.path={your_wanted_download_path}```
+
+- Logs path (default /var/log/easy-youtube-download) : ```--logging.path={your_wanted_logging_path}```
+
+- H2 path (default /var/easy-youtube-download/h2) : ```--h2.path={your_wanted_h2_path}```
+
+- H2 console (default true) : ```--spring.h2.console.enabled={true/false}```
+
+- H2 username (default sa) : ```--spring.datasource.username={your_wanted_h2_username}```
+
+- H2 password (empty by default) : ```--spring.datasource.password={your_wanted_h2_password}```
+
+- Enable security : ```--security.enabled=true```
+
+- Set an user (repeat with different number to set multiple users): ```--security.users\[0].name={user} --security.users\[0].password={password} --security.users\[0].role={USER|ADMIN}```
 
 ## Launch
 ```
