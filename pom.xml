@@ -6,7 +6,7 @@
 
   <groupId>com.vladkel</groupId>
   <artifactId>easy-youtube-download</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -42,7 +42,7 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
-    <!-- hot swapping, disable cache for template, enable live reload -->
+    <!-- Hot swapping, disable cache for template, enable live reload -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -55,12 +55,14 @@
       <artifactId>h2</artifactId>
     </dependency>
 
-    <!-- Log -->
+    <!-- Lombok -->
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.2</version>
+      <scope>provided</scope>
     </dependency>
+
   </dependencies>
 
   <build>

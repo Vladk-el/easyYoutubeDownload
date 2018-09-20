@@ -1,5 +1,7 @@
 package com.vladkel.easy.youtube.download.model;
 
+import lombok.Data;
+
 /**
  * Bean of a youtude-dl request.
  * <p>
@@ -7,16 +9,9 @@ package com.vladkel.easy.youtube.download.model;
  *
  * @author Eliott Laversin
  */
+@Data
 public class Dl {
 
   private String url;
-
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
-  }
 
 }

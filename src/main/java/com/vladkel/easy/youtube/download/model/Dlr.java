@@ -2,6 +2,8 @@ package com.vladkel.easy.youtube.download.model;
 
 import static com.vladkel.easy.youtube.download.model.Dlr.Status.OK;
 
+import lombok.Data;
+
 /**
  * Bean of a youtude-dl response.
  * <p>
@@ -9,6 +11,7 @@ import static com.vladkel.easy.youtube.download.model.Dlr.Status.OK;
  *
  * @author Eliott Laversin
  */
+@Data
 public class Dlr {
 
   private Long id;
@@ -32,47 +35,8 @@ public class Dlr {
     setError(null);
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Status getStatus() {
-    return status;
-  }
-
-  public void setStatus(Status status) {
-    this.status = status;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getError() {
-    return error;
-  }
-
-  public void setError(String error) {
-    this.error = error;
-  }
-
   public enum Status {
     OK, NOK
   }
+
 }
