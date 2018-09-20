@@ -1,5 +1,7 @@
 package com.vladkel.easy.youtube.download.model;
 
+import static com.vladkel.easy.youtube.download.model.Dlr.Status.OK;
+
 /**
  * Bean of a youtude-dl response.
  * <p>
@@ -20,6 +22,14 @@ public class Dlr {
     this.content = content;
     this.name = name;
     this.error = error;
+  }
+
+  public Dlr(Hm hm) {
+    setId(hm.getId());
+    setStatus(OK);
+    setContent(null);
+    setName(hm.getName());
+    setError(null);
   }
 
   public Long getId() {

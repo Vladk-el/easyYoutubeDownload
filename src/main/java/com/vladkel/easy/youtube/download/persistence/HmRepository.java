@@ -18,6 +18,8 @@ public interface HmRepository extends CrudRepository<Hm, Long> {
 
   List<Hm> findByCleanName(String cleanName);
 
+  List<Hm> findByUrl(String url);
+
   List<Hm> findByOrderByIdDesc();
 
 }

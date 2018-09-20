@@ -1,5 +1,7 @@
 package com.vladkel.easy.youtube.download.service;
 
+import static com.vladkel.easy.youtube.download.model.Dlr.Status.OK;
+
 import com.vladkel.easy.youtube.download.model.Dl;
 import com.vladkel.easy.youtube.download.model.Dlr;
 import com.vladkel.easy.youtube.download.model.Hm;
@@ -46,6 +48,12 @@ public class DownloadService {
 
   public Dlr downloadOnServer(Dl dl) {
     LOGGER.info("trying do download : {} ...", dl.getUrl());
+    List<Hm> existing = repository.findByUrl(dl.getUrl());
+    if (!existing.isEmpty()) {
+      Hm last = existing.get(existing.size() - 1);
+      LOGGER.info("This file was already downloaded. Let's reuse old entry {}.", last.getId());
+      return new Dlr(last);
+    }
     return process(dl);
   }
 
@@ -108,7 +116,7 @@ public class DownloadService {
     // Status
     Dlr.Status status =
         content.contains(DOWNLOAD_DONE) ?
-            Dlr.Status.OK :
+            OK :
             Dlr.Status.NOK;
 
     // Path
@@ -125,7 +133,7 @@ public class DownloadService {
   }
 
   private Dlr saveHm(Dl dl, Dlr dlr, Date start) {
-    if (dlr.getStatus().equals(Dlr.Status.OK)) {
+    if (dlr.getStatus().equals(OK)) {
 
       List<Hm> existing = repository.findByCleanName(dlr.getName());
       if (existing.isEmpty()) {
