@@ -49,3 +49,17 @@ You can also set them directly from the command line when you start the applicat
 $ java -jar target/easy-youtube-download-exec.jar [--option=value...] &
 ```
 
+## Release note
+
+### 0.0.1
+* all basics
+
+### 0.0.2
+* add basic spring boot security
+
+### 0.0.3
+* allow to connecting h2 console remotely via spring boot security
+* prevent to save doublons on database
+* add check on url before download new music
+* use lombock & remove unused log dependency
+
