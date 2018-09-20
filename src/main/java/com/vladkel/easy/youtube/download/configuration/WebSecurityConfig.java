@@ -31,15 +31,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       LOGGER.info("Configure HttpSecurity mapping ...");
       http
           .authorizeRequests()
-          .antMatchers("/", "/downloadOnServer", "/download/{id}", "/history").permitAll()
-          .anyRequest().authenticated()
-          .and()
+            .antMatchers("/").permitAll()
+            .anyRequest().authenticated()
+            .and()
+          .csrf()
+            .ignoringAntMatchers("/h2/*", "/downloadOnServer", "/download/{id}", "/history")
+            .and()
           .formLogin()
-          .loginPage("/login").defaultSuccessUrl("/", true)
-          .permitAll()
-          .and()
+            .loginPage("/login").defaultSuccessUrl("/", true)
+            .permitAll()
+            .and()
           .logout()
-          .permitAll();
+            .permitAll()
+            .and()
+          .headers()
+            .frameOptions()
+            .sameOrigin();
     }
   }
 
