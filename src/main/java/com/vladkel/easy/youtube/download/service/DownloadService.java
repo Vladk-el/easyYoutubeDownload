@@ -126,17 +126,26 @@ public class DownloadService {
 
   private Dlr saveHm(Dl dl, Dlr dlr, Date start) {
     if (dlr.getStatus().equals(Dlr.Status.OK)) {
-      repository.save(
-          new Hm(
-              dl,
-              dlr,
-              new File(DOWNLOAD_BASE_PATH + "/" + dlr.getName())
-          )
-      );
-      dlr.setId(repository.findByCleanName(dlr.getName()).getId());
-      LOGGER
-          .info("Took {} seconds to download {}", (new Date().getTime() - start.getTime()) / 1000,
-              dlr.getName());
+
+      List<Hm> existing = repository.findByCleanName(dlr.getName());
+      if (existing.isEmpty()) {
+        repository.save(
+            new Hm(
+                dl,
+                dlr,
+                new File(DOWNLOAD_BASE_PATH + "/" + dlr.getName())
+            )
+        );
+        dlr.setId(repository.findByCleanName(dlr.getName()).get(0).getId());
+        LOGGER
+            .info("Took {} seconds to download {}", (new Date().getTime() - start.getTime()) / 1000,
+                dlr.getName());
+      } else {
+        long last = existing.get(existing.size() - 1).getId();
+        LOGGER.info("This file was already downloaded. Let's reuse old entry {}.", last);
+        dlr.setId(last);
+      }
+
     }
     return dlr;
   }

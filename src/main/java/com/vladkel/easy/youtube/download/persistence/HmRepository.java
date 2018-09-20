@@ -16,7 +16,7 @@ public interface HmRepository extends CrudRepository<Hm, Long> {
 
   Hm findById(Long id);
 
-  Hm findByCleanName(String cleanName);
+  List<Hm> findByCleanName(String cleanName);
 
   List<Hm> findByOrderByIdDesc();
 
