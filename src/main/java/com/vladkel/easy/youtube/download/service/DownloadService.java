@@ -71,6 +71,7 @@ public class DownloadService {
       p.waitFor();
 
       result = read(p.getInputStream());
+      System.out.println(result);
 
       if (result.endsWith(PREMATURE_ENDS)) {
         result = read(p.getErrorStream());
